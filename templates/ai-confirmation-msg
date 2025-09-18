@@ -1,0 +1,38 @@
+#!/bin/bash
+# Reusable AI detection + tagging script
+
+commit_msg_file="$1"
+
+if [ ! -f "$commit_msg_file" ]; then
+  echo "❌ Commit message file not found."
+  exit 1
+fi
+
+echo "📝 Commit message:"
+cat "$commit_msg_file"
+echo ""
+
+# Ask for AI confirmation
+printf "Is this code written by AI? (y/n): "
+if ! read -r ai_response < /dev/tty; then
+  echo "⚠️ Skipping AI detection (no TTY)."
+  exit 0
+fi
+
+# Normalize input
+ai_response=$(echo "$ai_response" | tr '[:upper:]' '[:lower:]')
+
+if [[ "$ai_response" == "y" || "$ai_response" == "yes" ]]; then
+  if ! grep -q "\[AI\]" "$commit_msg_file"; then
+    first_line=$(head -n1 "$commit_msg_file")
+    rest=$(tail -n +2 "$commit_msg_file")
+
+    echo "[AI] ${first_line}" > "$commit_msg_file"
+    echo "$rest" >> "$commit_msg_file"
+    echo "✅ [AI] tag added."
+  else
+    echo "ℹ️ [AI] tag already present."
+  fi
+else
+  echo "✅ Proceeding without AI tag."
+fi

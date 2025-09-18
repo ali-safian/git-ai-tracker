@@ -1,0 +1,5 @@
+#!/bin/bash
+# Git official hook that delegates to ai-confirmation-msg
+
+SCRIPT_DIR="$(dirname "$0")"
+"$SCRIPT_DIR/ai-confirmation-msg" "$@"

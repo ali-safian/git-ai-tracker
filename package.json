@@ -1,0 +1,37 @@
+{
+  "name": "git-ai-tracker",
+  "version": "1.0.1",
+  "description": "Track and analyze AI-assisted commits in Git repositories",
+  "main": "index.js",
+  "bin": {
+    "git-ai": "bin/git-ai.js",
+    "git-ai-setup": "bin/git-ai-setup.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node scripts/post-install.js"
+  },
+  "keywords": [
+    "git",
+    "ai",
+    "artificial-intelligence",
+    "commit-tracking",
+    "development-analytics",
+    "git-hooks",
+    "cli"
+  ],
+  "author": "Ali Safian",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-safian/git-ai-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ali-safian/git-ai-tracker/issues"
+  },
+    "homepage": "https://github.com/ali-safian/git-ai-tracker#readme"
+}
