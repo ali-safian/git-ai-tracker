@@ -7,20 +7,22 @@ show_help() {
     echo "Usage: $0 [options] [branch/tag] [base_branch/previous_tag]"
     echo ""
     echo "Options:"
-    echo "  -b, --branch BRANCH         Track AI commits in specific branch"
+    echo "  -b, --branch [BRANCH]       Track AI commits in specific branch (uses current branch if not specified)"
     echo "  -t, --tag TAG [PREV_TAG]    Track AI commits in tag, optionally compare with previous tag"
-    echo "  -f, --feature BRANCH [BASE] Track AI commits since feature branch creation (default base: master)"
+    echo "  -f, --feature [BRANCH] [BASE] Track AI commits since feature branch creation (uses current branch if not specified, default base: master)"
     echo "  -c, --compare BASE FEATURE  Compare AI commits between base and feature branch"
     echo "  -a, --all-branches          Show AI stats for all branches"
     echo "  -r, --range FROM TO         Track AI commits between two commits/tags/branches"
     echo "  -h, --help                  Show this help"
     echo ""
     echo "Examples:"
+    echo "  $0 -b                                     # AI commits in current branch"
     echo "  $0 -b feature/new-login                    # AI commits in specific branch"
-    echo "  $0 -t live-2.0.3                          # AI commits in specific tag"
-    echo "  $0 -t live-2.0.3 live-2.0.2              # AI commits between two tags"
+    echo "  $0 -f                                     # AI commits since current branch creation from master"
     echo "  $0 -f feature/new-login                    # AI commits since branch creation from master"
     echo "  $0 -f feature/new-login develop           # AI commits since branch creation from develop"
+    echo "  $0 -t live-2.0.3                          # AI commits in specific tag"
+    echo "  $0 -t live-2.0.3 live-2.0.2              # AI commits between two tags"
     echo "  $0 -c master feature/new-login            # Compare feature branch with master"
     echo "  $0 -r v1.0.0 v2.0.0                      # AI commits between two versions"
     echo "  $0 -a                                     # Show AI stats for all branches"
@@ -246,16 +248,33 @@ show_all_branches() {
     done | sort -k2 -nr | head -10
 }
 
+# Get current branch function
+get_current_branch() {
+    git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
 # Main script logic
 case "$1" in
     -b|--branch)
-        track_branch "$2"
+        # Use current branch if no branch specified
+        branch_name="${2:-$(get_current_branch)}"
+        if [ -z "$branch_name" ]; then
+            echo "❌ Could not determine current branch and no branch specified"
+            exit 1
+        fi
+        track_branch "$branch_name"
         ;;
     -t|--tag)
         track_tag "$2" "$3"
         ;;
     -f|--feature)
-        track_feature_branch "$2" "${3:-master}"
+        # Use current branch if no branch specified
+        feature_branch="${2:-$(get_current_branch)}"
+        if [ -z "$feature_branch" ]; then
+            echo "❌ Could not determine current branch and no branch specified"
+            exit 1
+        fi
+        track_feature_branch "$feature_branch" "${3:-master}"
         ;;
     -c|--compare)
         compare_branches "$2" "$3"

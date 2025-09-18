@@ -44,12 +44,18 @@ Is this code written by AI? (y/n): y
 git ai -a
 
 # Track AI commits in current branch
+git ai -b
+
+# Track AI commits in specific branch
 git ai -b main
 
 # Track AI commits in a specific tag
 git ai -t v2.0.1
 
-# Track AI commits in feature branch (since creation)
+# Track AI commits in current feature branch (since creation)
+git ai -f
+
+# Track AI commits in specific feature branch (since creation)
 git ai -f feature/new-login
 ```
 
@@ -83,9 +89,9 @@ git ai -f feature/auth develop
 | Command | Description | Example |
 |---------|-------------|---------|
 | `git ai -a` | Show all branches with AI commits | `git ai -a` |
-| `git ai -b <branch>` | AI commits in specific branch | `git ai -b main` |
+| `git ai -b [branch]` | AI commits in branch (current if not specified) | `git ai -b` or `git ai -b main` |
+| `git ai -f [branch] [base]` | AI commits since branch creation (current if not specified) | `git ai -f` or `git ai -f feature/auth master` |
 | `git ai -t <tag> [prev]` | AI commits in tag, optionally vs previous | `git ai -t v2.0.1 v2.0.0` |
-| `git ai -f <branch> [base]` | AI commits since branch creation | `git ai -f feature/auth master` |
 | `git ai -c <base> <feature>` | Compare branches | `git ai -c master feature/new-ui` |
 | `git ai -r <from> <to>` | AI commits between references | `git ai -r HEAD~10 HEAD` |
 | `git ai -s` | Set up AI tracking in repository | `git ai -s` |
@@ -140,7 +146,7 @@ npm install -g git-ai-tracker
 
 ### Method 2: Direct from Repository
 ```bash
-git clone https://github.com/your-username/git-ai-tracker.git
+git clone https://github.com/ali-safian/git-ai-tracker.git
 cd git-ai-tracker
 npm install -g .
 ```
@@ -170,6 +176,9 @@ rm .git/hooks/commit-msg .git/hooks/ai-confirmation-msg
 
 ## 💡 Tips
 
+- **Current Branch Detection**: Use `git ai -b` or `git ai -f` without specifying a branch to automatically use your current branch
+- **Quick Branch Analysis**: Perfect for checking AI commits in your current working branch before merging
+
 - **Branch Tracking**: Uses `git merge-base` to find exact divergence points
 - **Performance**: Optimized for large repositories with thousands of commits
 - **Compatibility**: Works with any Git workflow (GitFlow, GitHub Flow, etc.)
@@ -190,10 +199,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🐛 Issues
 
-Found a bug? Have a feature request? Please open an issue on [GitHub](https://github.com/your-username/git-ai-tracker/issues).
+Found a bug? Have a feature request? Please open an issue on [GitHub](https://github.com/ali-safian/git-ai-tracker/issues).
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/your-username/git-ai-tracker)
+- [GitHub Repository](https://github.com/ali-safian/git-ai-tracker)
 - [NPM Package](https://www.npmjs.com/package/git-ai-tracker)
-- [Documentation](https://github.com/your-username/git-ai-tracker/wiki)
+- [Documentation](https://github.com/ali-safian/git-ai-tracker/wiki)

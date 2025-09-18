@@ -17,5 +17,5 @@ console.log(`
 
 💡 Need help? Run: git ai -h
 
-🔗 Documentation: https://github.com/your-username/git-ai-tracker
+🔗 Documentation: https://github.com/ali-safian/git-ai-tracker
 `);

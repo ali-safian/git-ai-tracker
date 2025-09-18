@@ -1,6 +1,6 @@
 {
   "name": "git-ai-tracker",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Track and analyze AI-assisted commits in Git repositories",
   "main": "index.js",
   "bin": {

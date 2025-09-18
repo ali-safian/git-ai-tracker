@@ -50,9 +50,9 @@ function showHelp() {
 Usage: git ai [options] [branch/tag] [base_branch/previous_tag]
 
 Options:
-  -b, --branch BRANCH         Track AI commits in specific branch
+  -b, --branch [BRANCH]       Track AI commits in specific branch (uses current branch if not specified)
   -t, --tag TAG [PREV_TAG]    Track AI commits in tag, optionally compare with previous tag
-  -f, --feature BRANCH [BASE] Track AI commits since feature branch creation (default base: master)
+  -f, --feature [BRANCH] [BASE] Track AI commits since feature branch creation (uses current branch if not specified, default base: master)
   -c, --compare BASE FEATURE  Compare AI commits between base and feature branch
   -a, --all-branches          Show AI stats for all branches
   -r, --range FROM TO         Track AI commits between two commits/tags/branches
@@ -60,11 +60,13 @@ Options:
   -h, --help                  Show this help
 
 Examples:
+  git ai -b                                     # AI commits in current branch
   git ai -b feature/new-login                    # AI commits in specific branch
-  git ai -t v2.0.3                              # AI commits in specific tag
-  git ai -t v2.0.3 v2.0.2                      # AI commits between two tags
+  git ai -f                                     # AI commits since current branch creation from master
   git ai -f feature/new-login                    # AI commits since branch creation from master
   git ai -c master feature/new-login            # Compare feature branch with master
+  git ai -t v2.0.3                              # AI commits in specific tag
+  git ai -t v2.0.3 v2.0.2                      # AI commits between two tags
   git ai -r v1.0.0 v2.0.0                      # AI commits between two versions
   git ai -a                                     # Show AI stats for all branches
   git ai -s                                     # Set up AI tracking in current repo
@@ -73,7 +75,7 @@ Setup:
   Run 'git ai -s' in any repository to enable AI commit tracking.
   This will install the commit hooks that prompt for AI usage.
 
-🔗 More info: https://github.com/your-username/git-ai-tracker
+🔗 More info: https://github.com/ali-safian/git-ai-tracker
   `);
 }
 
