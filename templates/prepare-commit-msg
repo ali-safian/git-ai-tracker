@@ -1,0 +1,50 @@
+#!/bin/bash
+# Git hook to append a short user hash (from git user.name + user.email) to the subject line.
+
+commit_msg_file="$1"
+
+if [ ! -f "$commit_msg_file" ]; then
+  exit 0
+fi
+
+user_name=$(git config user.name 2>/dev/null)
+user_email=$(git config user.email 2>/dev/null)
+
+if [ -z "$user_name" ] || [ -z "$user_email" ]; then
+  exit 0
+fi
+
+user_string="${user_name}:${user_email}"
+if command -v md5sum >/dev/null 2>&1; then
+  user_hash=$(printf '%s' "$user_string" | md5sum | awk '{print substr($1,1,8)}')
+else
+  user_hash=$(printf '%s' "$user_string" | md5 -q | awk '{print substr($0,1,8)}')
+fi
+
+commit_message=$(cat "$commit_msg_file")
+
+# Nothing to do if only comments / blanks
+if [ -z "$(echo "$commit_message" | grep -v '^#' | grep -v '^[[:space:]]*$')" ]; then
+  exit 0
+fi
+
+if echo "$commit_message" | grep -qE ' - \$u:[a-f0-9]{8}'; then
+  exit 0
+fi
+
+suffix=$(printf ' - $u:%s' "$user_hash")
+tmp="${commit_msg_file}.git-ai-tracker.tmp"
+
+awk -v suffix="$suffix" '
+  /^#/ { print; next }
+  {
+    if (!done) {
+      if ($0 ~ /^[[:space:]]*$/) { print; next }
+      if ($0 ~ / - \$u:[a-f0-9]{8}$/) { print; done = 1; next }
+      print $0 suffix
+      done = 1
+      next
+    }
+    print
+  }
+' "$commit_msg_file" > "$tmp" && mv "$tmp" "$commit_msg_file"

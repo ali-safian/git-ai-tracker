@@ -49,6 +49,7 @@ function setupHooks() {
   // Verify templates exist
   const commitMsgTemplate = path.join(templatesDir, 'commit-msg');
   const aiConfirmTemplate = path.join(templatesDir, 'ai-confirmation-msg');
+  const prepareCommitMsgTemplate = path.join(templatesDir, 'prepare-commit-msg');
   
   if (!fs.existsSync(commitMsgTemplate)) {
     console.error(`❌ Template not found: ${commitMsgTemplate}`);
@@ -60,9 +61,22 @@ function setupHooks() {
     process.exit(1);
   }
   
+  if (!fs.existsSync(prepareCommitMsgTemplate)) {
+    console.error(`❌ Template not found: ${prepareCommitMsgTemplate}`);
+    process.exit(1);
+  }
+  
   console.log('✅ Templates found');
 
   try {
+    // Copy prepare-commit-msg hook (runs first to add user hash)
+    const prepareCommitMsgHook = path.join(hooksDir, 'prepare-commit-msg');
+    console.log(`📋 Installing prepare-commit-msg hook...`);
+    
+    fs.copyFileSync(prepareCommitMsgTemplate, prepareCommitMsgHook);
+    fs.chmodSync(prepareCommitMsgHook, 0o755);
+    console.log(`✅ Installed: ${prepareCommitMsgHook}`);
+    
     // Copy commit-msg hook
     const commitMsgHook = path.join(hooksDir, 'commit-msg');
     console.log(`📋 Installing commit-msg hook...`);
@@ -83,25 +97,29 @@ function setupHooks() {
     console.log('');
     console.log('🔍 Verifying installation...');
     
-    if (fs.existsSync(commitMsgHook) && fs.existsSync(aiConfirmScript)) {
+    if (fs.existsSync(prepareCommitMsgHook) && fs.existsSync(commitMsgHook) && fs.existsSync(aiConfirmScript)) {
+      const prepareStats = fs.statSync(prepareCommitMsgHook);
       const commitStats = fs.statSync(commitMsgHook);
       const aiStats = fs.statSync(aiConfirmScript);
       
-      if (commitStats.mode & parseInt('111', 8) && aiStats.mode & parseInt('111', 8)) {
+      if (prepareStats.mode & parseInt('111', 8) && commitStats.mode & parseInt('111', 8) && aiStats.mode & parseInt('111', 8)) {
         console.log('✅ Git AI tracking hooks successfully installed!');
-        console.log('✅ Both hooks are executable');
+        console.log('✅ All hooks are executable');
         console.log('');
-        console.log('🎉 Setup complete! Your repository now supports AI commit tracking.');
+        console.log('🎉 Setup complete! Your repository now supports enhanced commit tracking.');
         console.log('');
-        console.log('📝 When you make commits, you\'ll be prompted:');
-        console.log('   "Is this code written by AI? (y/n):"');
+        console.log('📝 Features enabled:');
+        console.log('   • User identification hash added to all commits');
+        console.log('   • AI detection prompts for commit classification');
+        console.log('');
+        console.log('📋 Commit format examples:');
+        console.log('   Regular: "Fix bug - $u:a1b2c3d4"');
+        console.log('   AI-assisted: "[AI] Add feature - $u:a1b2c3d4"');
         console.log('');
         console.log('🔍 Track AI commits with:');
         console.log('   git ai -a                    # Show all AI commits');
         console.log('   git ai -f <branch>           # AI commits in feature branch');
         console.log('   git ai -t <tag>              # AI commits in tag');
-        console.log('');
-        console.log('💡 AI commits will be tagged with [AI] at the beginning.');
       } else {
         console.error('❌ Hooks installed but not executable');
         process.exit(1);

@@ -22,18 +22,21 @@ Navigate to any Git repository and run:
 git ai -s
 ```
 
-This sets up commit hooks that will prompt you about AI usage when committing.
+This installs Git hooks: a `prepare-commit-msg` hook that appends a short user hash to the subject line, and a `commit-msg` flow that prompts about AI usage.
 
 ### Usage
 
-Once set up, every commit will prompt:
+Once set up, commits get a hash derived from `user.name` and `user.email` (format ` - $u:` plus eight hex characters), then the AI prompt runs:
+
 ```
 📝 Commit message:
-Add new feature
+Add new feature - $u:a1b2c3d4
 
 Is this code written by AI? (y/n): y
 ✅ [AI] tag added.
 ```
+
+Final message example: `[AI] Add new feature - $u:a1b2c3d4`
 
 ## 📊 Tracking Commands
 
@@ -77,6 +80,7 @@ git ai -f feature/auth develop
 
 ## 📈 Features
 
+- **User hash on every commit**: Subject line gets ` - $u:<8 hex chars>` from an MD5 of `user.name:user.email` (macOS and Linux)
 - **🔍 Branch Analysis**: Track AI commits since branch creation using `git merge-base`
 - **🏷️ Tag Comparisons**: Compare AI usage between releases
 - **📊 Statistics**: Percentage of AI-assisted commits with detailed breakdowns
@@ -171,7 +175,7 @@ npm uninstall -g git-ai-tracker
 
 To remove hooks from a repository:
 ```bash
-rm .git/hooks/commit-msg .git/hooks/ai-confirmation-msg
+rm .git/hooks/prepare-commit-msg .git/hooks/commit-msg .git/hooks/ai-confirmation-msg
 ```
 
 ## 💡 Tips
